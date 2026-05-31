@@ -62,11 +62,15 @@ pipeline {
         stage('Promote') {
             steps {
                 sh '''
-                    git config user.email "adrian@unir.com"
-                    git config user.name "Adrian"
+                    git config user.email "asimonr@gmail.com"
+                    git config user.name "adrijar"
                     git checkout master
                     git merge develop
                     git push origin master
+<<<<<<< HEAD
+=======
+                    git push https://${GIT_USER}:${GIT_TOKEN}@github.com/adrijar/todo-list-aws.git master
+>>>>>>> cdc09c0 (Add GitHub token and user)
                 '''
             }
         }
