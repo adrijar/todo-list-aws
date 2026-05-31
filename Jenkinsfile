@@ -40,7 +40,7 @@ pipeline {
                         --no-confirm-changeset \
                         --no-fail-on-empty-changeset \
                         --s3-bucket todo-list-aws-bucket-787991874982 \
-                        --parameter-overrides Environment=staging
+                        --parameter-overrides Stage=staging
                 '''
             }
         }
