@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        STACK_NAME = 'todo-list-aws-staging'
+        STACK_NAME = 'todo-list-aws-production'
         REGION = 'us-east-1'
     }
 
@@ -10,21 +10,7 @@ pipeline {
 
         stage('Get Code') {
             steps {
-                git branch: 'develop', url: 'https://github.com/adrijar/todo-list-aws.git'
-            }
-        }
-
-        stage('Static Test') {
-            steps {
-                sh '''
-                    flake8 src/ --format=pylint > flake8-report.txt || true
-                    bandit -r src/ -f txt -o bandit-report.txt || true
-                '''
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: '*-report.txt', allowEmptyArchive: true
-                }
+                git branch: 'master', url: 'https://github.com/adrijar/todo-list-aws.git'
             }
         }
 
@@ -40,7 +26,7 @@ pipeline {
                         --no-confirm-changeset \
                         --no-fail-on-empty-changeset \
                         --s3-bucket todo-list-aws-bucket-787991874982 \
-                        --parameter-overrides Stage=staging
+                        --parameter-overrides Stage=production
                 '''
             }
         }
@@ -51,26 +37,12 @@ pipeline {
                     BASE_URL=$(aws cloudformation describe-stacks \
                         --stack-name ${STACK_NAME} \
                         --region ${REGION} \
-                        --query "Stacks[0].Outputs[?OutputKey=='BaseUrlApi'].OutputValue" \
+                        --query "Stacks[0].Outputs[?OutputKey=='"'"'BaseUrlApi'"'"'].OutputValue" \
                         --output text)
                     export BASE_URL
-                    pytest test/integration/todoApiTest.py -v
+                    pytest test/integration/todoApiTest.py -v -k "listtodos or gettodo"
                 '''
             }
         }
-
-        stage('Promote') {
-    steps {
-        withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-            sh '''
-                git config user.email "adrian.simonriv0565@comunidadunir.net"
-                git config user.name "adrijar"
-                git checkout master
-                git merge develop
-                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/adrijar/todo-list-aws.git master
-            '''
-        }
-    }
-}
     }
 }
