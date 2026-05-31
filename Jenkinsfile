@@ -60,19 +60,17 @@ pipeline {
         }
 
         stage('Promote') {
-            steps {
-                sh '''
-                    git config user.email "asimonr@gmail.com"
-                    git config user.name "adrijar"
-                    git checkout master
-                    git merge develop
-                    git push origin master
-<<<<<<< HEAD
-=======
-                    git push https://${GIT_USER}:${GIT_TOKEN}@github.com/adrijar/todo-list-aws.git master
->>>>>>> cdc09c0 (Add GitHub token and user)
-                '''
-            }
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+            sh '''
+                git config user.email "adrian.simonriv0565@comunidadunir.net"
+                git config user.name "adrijar"
+                git checkout master
+                git merge develop
+                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/adrijar/todo-list-aws.git master
+            '''
         }
+    }
+}
     }
 }
