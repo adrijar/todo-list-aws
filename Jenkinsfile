@@ -37,7 +37,7 @@ pipeline {
                     BASE_URL=$(aws cloudformation describe-stacks \
                         --stack-name ${STACK_NAME} \
                         --region ${REGION} \
-                        --query "Stacks[0].Outputs[?OutputKey==\`BaseUrlApi\`].OutputValue" \
+                        --query "Stacks[0].Outputs[?OutputKey=='BaseUrlApi'].OutputValue" \
                         --output text)
                     export BASE_URL
                     pytest test/integration/todoApiTest.py -v -k "listtodos or gettodo"
