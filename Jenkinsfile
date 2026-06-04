@@ -67,7 +67,7 @@ pipeline {
                 git config user.name "adrijar"
                 git checkout master
                 git merge develop
-                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/adrijar/todo-list-aws.git master
+                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/adrijar/todo-list-aws.git master --force
             '''
         }
     }
