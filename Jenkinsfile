@@ -67,9 +67,7 @@ pipeline {
                 git config user.name "adrijar"
                 git fetch origin
                 git checkout master
-                git merge develop
-                git checkout origin/master -- Jenkinsfile
-                git commit -m "Restore CD Jenkinsfile after merge" || true
+                git merge --no-ff develop
                 git push https://${GIT_USER}:${GIT_TOKEN}@github.com/adrijar/todo-list-aws.git master --force
             '''
         }
