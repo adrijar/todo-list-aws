@@ -59,18 +59,22 @@ pipeline {
             }
         }
 
-        stage('Promote') {
+       stage('Promote') {
     steps {
         withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
             sh '''
                 git config user.email "adrian.simonriv0565@comunidadunir.net"
                 git config user.name "adrijar"
+                git fetch origin
                 git checkout master
                 git merge develop
+                git checkout origin/master -- Jenkinsfile
+                git commit -m "Restore CD Jenkinsfile after merge" || true
                 git push https://${GIT_USER}:${GIT_TOKEN}@github.com/adrijar/todo-list-aws.git master --force
             '''
         }
     }
+}
 }
     }
 }
