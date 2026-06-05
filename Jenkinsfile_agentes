@@ -10,6 +10,8 @@ pipeline {
 
         stage('Get Code') {
             steps {
+                sh 'whoami'
+                sh 'hostname'
                 git branch: 'develop', url: 'https://github.com/adrijar/todo-list-aws.git'
             }
         }
@@ -17,6 +19,8 @@ pipeline {
         stage('Static Test') {
             agent { label 'agente1' }
             steps {
+                sh 'whoami'
+                sh 'hostname'
                 sh '''
                     flake8 src/ --format=pylint > flake8-report.txt || true
                     bandit -r src/ -f txt -o bandit-report.txt || true
@@ -31,7 +35,11 @@ pipeline {
 
         stage('Deploy') {
             steps {
+                sh 'whoami'
+                sh 'hostname'
                 sh '''
+             
+             
                     sam build
                     sam validate --region ${REGION}
                     sam deploy \
@@ -49,6 +57,8 @@ pipeline {
         stage('Rest Test') {
             agent { label 'agente2' }
             steps {
+                sh 'whoami'
+                sh 'hostname'
                 sh '''
                     BASE_URL=$(aws cloudformation describe-stacks \
                         --stack-name ${STACK_NAME} \
@@ -63,6 +73,8 @@ pipeline {
 
         stage('Promote') {
             steps {
+                sh 'whoami'
+                sh 'hostname'
                 withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
                     sh '''
                         git config user.email "adrian.simonriv0565@comunidadunir.net"
