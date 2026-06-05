@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'principal' }
 
     environment {
         STACK_NAME = 'todo-list-aws-production'
@@ -11,6 +11,7 @@ pipeline {
         stage('Get Code') {
             steps {
                 git branch: 'master', url: 'https://github.com/adrijar/todo-list-aws.git'
+                sh 'curl -o samconfig.toml https://raw.githubusercontent.com/adrijar/todo-list-aws-config/production/samconfig.toml'
             }
         }
 
@@ -19,14 +20,7 @@ pipeline {
                 sh '''
                     sam build
                     sam validate --region ${REGION}
-                    sam deploy \
-                        --stack-name ${STACK_NAME} \
-                        --region ${REGION} \
-                        --capabilities CAPABILITY_IAM \
-                        --no-confirm-changeset \
-                        --no-fail-on-empty-changeset \
-                        --s3-bucket todo-list-aws-bucket-787991874982 \
-                        --parameter-overrides Stage=production
+                    sam deploy --config-env production --no-confirm-changeset --no-fail-on-empty-changeset
                 '''
             }
         }
