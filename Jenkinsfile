@@ -11,6 +11,7 @@ pipeline {
         stage('Get Code') {
             steps {
                 git branch: 'develop', url: 'https://github.com/adrijar/todo-list-aws.git'
+                sh 'curl -o samconfig.toml https://raw.githubusercontent.com/adrijar/todo-list-aws-config/staging/samconfig.toml'
             }
         }
 
@@ -33,14 +34,7 @@ pipeline {
                 sh '''
                     sam build
                     sam validate --region ${REGION}
-                    sam deploy \
-                        --stack-name ${STACK_NAME} \
-                        --region ${REGION} \
-                        --capabilities CAPABILITY_IAM \
-                        --no-confirm-changeset \
-                        --no-fail-on-empty-changeset \
-                        --s3-bucket todo-list-aws-bucket-787991874982 \
-                        --parameter-overrides Stage=staging
+                    sam deploy --config-env staging --no-confirm-changeset --no-fail-on-empty-changeset
                 '''
             }
         }
