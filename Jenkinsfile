@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'principal' }
 
     environment {
         STACK_NAME = 'todo-list-aws-staging'
